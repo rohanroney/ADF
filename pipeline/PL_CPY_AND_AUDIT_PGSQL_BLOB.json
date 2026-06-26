@@ -1,0 +1,143 @@
+{
+	"name": "PL_CPY_AND_AUDIT_PGSQL_BLOB",
+	"properties": {
+		"activities": [
+			{
+				"name": "CPY_PGSQL_BLOB",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "PostgreSqlV2Source",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_POSTGRES_EMPlOYEES",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_BLOB_EMPLOYEE",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SCPT_PASS_AUDIT",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "CPY_PGSQL_BLOB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_Postgres_on_prem",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": {
+								"value": "CALL log_pipeline_execution(\n'@{pipeline().Pipeline}',\n'@{pipeline().RunId}',\n'@{pipeline().parameters.SourceTable}',\n'@{pipeline().parameters.DestinationPath}',\n'Success',\n@{activity('CPY_PGSQL_BLOB').output.rowsCopied},\n@{activity('CPY_PGSQL_BLOB').output.copyDuration},\n'@{pipeline().TriggerTime}',\n'@{utcNow()}',\nNULL\n);",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "SCPT_FAIL_AUDIT",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "CPY_PGSQL_BLOB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_Postgres_on_prem",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": {
+								"value": "CALL log_pipeline_execution(\n'@{pipeline().Pipeline}',\n'@{pipeline().RunId}',\n'@{pipeline().parameters.SourceTable}',\n'@{pipeline().parameters.DestinationPath}',\n'Failed',\n0,\n0,\n'@{pipeline().TriggerTime}',\n'@{utcNow()}',\n'@{replace(activity('CPY_PGSQL_BLOB').error.message,'''','''''')}'\n);",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"parameters": {
+			"SourceTable": {
+				"type": "string",
+				"defaultValue": "employees"
+			},
+			"DestinationPath": {
+				"type": "string",
+				"defaultValue": "input/employees.csv"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-06-24T19:46:27Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

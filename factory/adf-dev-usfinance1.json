@@ -1,0 +1,15 @@
+{
+	"name": "adf-dev-usfinance1",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "38f29504-9565-419c-b8d6-610fb03dfb24",
+		"tenantId": "3f090a57-0fa2-4b7a-b09f-8778950fee28"
+	}
+}

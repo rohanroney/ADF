@@ -1,0 +1,17 @@
+{
+	"name": "DS_POSTGRES_EMPlOYEES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_POSTGRES_EMP",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "PostgreSqlV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "employees"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,28 @@
+{
+	"name": "TRGR_AUDIT",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_CPY_AND_AUDIT_PGSQL_BLOB",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"SourceTable": "employees",
+					"DestinationPath": "input/employees.csv"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2026-06-25T12:03:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

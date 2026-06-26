@@ -1,0 +1,22 @@
+{
+	"name": "LS_Postgres_on_prem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzurePostgreSql",
+		"version": "2.0",
+		"typeProperties": {
+			"server": "localhost",
+			"port": 5432,
+			"database": "emp",
+			"sslMode": 2,
+			"username": "postgres",
+			"authenticationType": "Basic",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlYmFhNWEwOS04NmVhLTQ3YWQtOTcwNy1iNjgxMWVkOTAxY2EiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-Postgres",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
